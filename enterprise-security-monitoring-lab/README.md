@@ -32,7 +32,27 @@ This project simulates an enterprise Security Operations Center (SOC) environmen
 - Security investigation workflows
 
 ## Lab Diagram
-(Add architecture image here)
+
+            ┌──────────────────────┐
+            │   Kali Linux VM      │
+            │   (Attacker)         │
+            └─────────┬────────────┘
+                      │
+                      │ Host-Only Network
+                      │ (19.168.52.0/24)
+                      │
+            ┌─────────▼────────────┐
+            │    RHEL VM           │
+            │ (Target + DVWA)      │
+            │ + Splunk Forwarder   │
+            └─────────┬────────────┘
+                      │
+              NAT Internet Access
+                      │
+            ┌─────────▼────────────┐
+            │ Splunk Enterprise    │
+            │ (SIEM Dashboard)     │
+            └──────────────────────┘
 
 ## Project Phases
 - Phase 1: Lab Setup
