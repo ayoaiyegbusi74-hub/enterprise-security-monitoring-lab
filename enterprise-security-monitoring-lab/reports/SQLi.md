@@ -74,7 +74,7 @@ Resulting payload:
 1' OR '1'='1
 ```
 
-![SQL Injection request in Apache access log](images/sqli-access-log.png)
+![alt text](<Screenshot 2026-06-30 124008.png>)
 
 ---
 
@@ -88,7 +88,7 @@ index=main sourcetype=apache_access "/dvwa/vulnerabilities/sqli"
 
 Result:
 
-![Splunk SQL Injection Events](images/sqli-events.png)
+![alt text](<Screenshot 2026-06-30 123651.png>)
 
 The search returns all requests made to the SQL Injection page.
 
@@ -104,7 +104,7 @@ index=main sourcetype=apache_access "/dvwa/vulnerabilities/sqli"
 
 Result:
 
-![Splunk SQL Injection Detection](images/sqli-detection.png)
+![alt text](<Screenshot 2026-06-30 123902.png>)
 
 ---
 
