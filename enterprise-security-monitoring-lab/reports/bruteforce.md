@@ -13,6 +13,26 @@
 
 ---
 
+## Attack Flow
+
+        ```text
+        Attacker (Kali)
+                │
+                │
+                ▼
+        DVWA Brute Force Page
+                │
+                ▼
+        Apache Access Log
+                │
+                ▼
+        Splunk Enterprise
+                │
+                ▼
+        SOC Investigation
+        ```
+---
+
 ## What Happened?
 
 From Kali, I attempted multiple logins against the DVWA Brute Force page using different passwords for the **admin** account.

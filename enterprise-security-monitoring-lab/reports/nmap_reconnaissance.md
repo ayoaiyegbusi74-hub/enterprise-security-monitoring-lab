@@ -12,6 +12,27 @@
 
 ---
 
+## Attack Flow
+
+        ```text
+        Attacker (Kali)
+                │
+                │
+                ▼
+        Apache Web Server (RHEL)
+                │
+                ▼
+        Apache Access Log
+                │
+                ▼
+        Splunk Enterprise
+                │
+                ▼
+        SOC Investigation
+        ```
+
+---
+
 ## What Happened?
 
 From Kali I ran:
