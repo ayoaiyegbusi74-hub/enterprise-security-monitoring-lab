@@ -147,6 +147,5 @@ Your troubleshooting process
 ✅ Identified that Splunk lacked permission to read the log directory/files.
 ✅ Granted the necessary ACLs and verified ingestion resumed.
 
-That is a solid, structured troubleshooting workflow.
 
 ---
