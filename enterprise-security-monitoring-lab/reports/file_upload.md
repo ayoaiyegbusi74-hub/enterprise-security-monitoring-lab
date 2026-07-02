@@ -206,7 +206,7 @@ index=main sourcetype=apache_access "shell.php"
 | timechart count
 ```
 
-enterprise-security-monitoring-lab/reports/screenshots/Screenshot 2026-07-02 095111.png
+c:\Users\ayoai\OneDrive\Desktop\DevSecOps projects\enterprise-security-monitoring-lab\reports\screenshots\Screenshot 2026-07-02 095111.png
 
 ---
 
