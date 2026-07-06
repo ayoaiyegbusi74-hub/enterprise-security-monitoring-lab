@@ -51,7 +51,8 @@ GET /dvwa/vulnerabilities/brute/?username=admin&password=1234567789&Login=Login 
 GET /dvwa/vulnerabilities/brute/?username=admin&password=password&Login=Login HTTP/1.1
 ```
 
-![alt text](<Screenshot 2026-06-30 115436.png>)
+![alt text](../screenshots/Screenshot%202026-06-30%20115436.png)
+
 ![alt text](<Screenshot 2026-06-30 115500.png>)
 ---
 
