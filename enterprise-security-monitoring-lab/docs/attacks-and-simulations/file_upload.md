@@ -52,7 +52,7 @@ Folder is not writable.
 
 The upload failed.
 
-![alt text](<Screenshot 2026-07-02 092034.png>)
+![alt text](../screenshots/Screenshot%202026-07-02%20092034.png)
 
 ---
 
@@ -162,7 +162,7 @@ Message:
 ../../hackable/uploads/shell.php successfully uploaded!
 ```
 
-![alt text](<Screenshot 2026-07-02 092921.png>)
+![alt text](../screenshots/Screenshot%202026-07-02%20092921.png)
 
 ---
 
@@ -177,7 +177,7 @@ request:
 GET /dvwa/hackable/uploads/shell.php?cmd=whoami
 ```
 
-![alt text](<Screenshot 2026-07-02 094826.png>)
+![alt text](../screenshots/Screenshot%202026-07-02%20094826.png)
 
 ---
 
@@ -189,7 +189,7 @@ search:
 index=main sourcetype=apache_access "/hackable/uploads"
 ```
 
-![alt text](<Screenshot 2026-07-02 093819.png>)
+![alt text](../screenshots/Screenshot%202026-07-02%20093819.png)
 
 To detect command execution:
 
@@ -197,7 +197,7 @@ To detect command execution:
 index=main sourcetype=apache_access "shell.php"
 ```
 
-![alt text](<Screenshot 2026-07-02 093735.png>)
+![alt text](../screenshots/Screenshot%202026-07-02%20093735.png)
 
 Timeline:
 
@@ -206,7 +206,7 @@ index=main sourcetype=apache_access "shell.php"
 | timechart count
 ```
 
-c:\Users\ayoai\OneDrive\Desktop\DevSecOps projects\enterprise-security-monitoring-lab\reports\screenshots\Screenshot 2026-07-02 095111.png
+![alt text](../screenshots/Screenshot%202026-07-02%20095111.png)
 
 ---
 

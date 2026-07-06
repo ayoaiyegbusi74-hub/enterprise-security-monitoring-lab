@@ -81,9 +81,9 @@ Decoded payload:
 
 The browser executed the JavaScript and displayed an alert box.
 
-![alt text](<Screenshot 2026-06-30 130406.png>)
+![alt text](../screenshots/Screenshot%202026-06-30%20130406.png)
 
-![alt text](<Screenshot 2026-06-30 130436.png>)
+![alt text](../screenshots/Screenshot%202026-06-30%20130436.png)
 ---
 
 # Part 2 – Stored XSS
@@ -106,9 +106,9 @@ The payload was stored by the application.
 
 Refreshing the page caused the JavaScript to execute again because it had been permanently saved in the guestbook.
 
-![alt text](<Screenshot 2026-06-30 131439.png>)
+![alt text](../screenshots/Screenshot%202026-06-30%20131439.png)
 
-![alt text](<Screenshot 2026-06-30 131635.png>)
+![alt text](../screenshots/Screenshot%202026-06-30%20131635.png)
 
 Apache recorded multiple POST requests:
 
@@ -118,7 +118,7 @@ POST /dvwa/vulnerabilities/xss_s/
 
 Unlike Reflected XSS, the malicious payload was **not visible** in the Apache access log.
 
-![alt text](<Screenshot 2026-06-30 131737.png>)
+![alt text](../screenshots/Screenshot%202026-06-30%20131737.png)
 
 ---
 
@@ -132,7 +132,7 @@ index=main sourcetype=apache_access "/dvwa/vulnerabilities/xss_r"
 
 Result:
 
-![alt text](<Screenshot 2026-06-30 130406-1.png>)
+![alt text](../screenshots/Screenshot%202026-06-30%20130406-1.png)
 
 ---
 
@@ -144,7 +144,7 @@ index=main sourcetype=apache_access "/dvwa/vulnerabilities/xss_s"
 
 Result:
 
-![alt text](<Screenshot 2026-06-30 131817.png>)
+![alt text](../screenshots/Screenshot%202026-06-30%20131817.png)
 
 ---
 
@@ -167,7 +167,7 @@ index=main sourcetype=apache_access "/dvwa/vulnerabilities/xss_s"
 | table _time host source _raw
 ```
 
-![alt text](<Screenshot 2026-06-30 132033.png>)
+![alt text](../screenshots/Screenshot%202026-06-30%20132033.png)
 
 Since Apache access logs do not capture POST request bodies by default, the malicious JavaScript payload cannot be seen directly.
 

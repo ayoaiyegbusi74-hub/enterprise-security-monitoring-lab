@@ -74,7 +74,7 @@ Resulting payload:
 1' OR '1'='1
 ```
 
-![alt text](<Screenshot 2026-06-30 124008.png>)
+![alt text](../screenshots/Screenshot%202026-06-30%20124008.png)
 
 ---
 
@@ -88,7 +88,7 @@ index=main sourcetype=apache_access "/dvwa/vulnerabilities/sqli"
 
 Result:
 
-![alt text](<Screenshot 2026-06-30 123651.png>)
+![alt text](../screenshots/Screenshot%202026-06-30%20123651.png)
 
 The search returns all requests made to the SQL Injection page.
 
@@ -104,7 +104,7 @@ index=main sourcetype=apache_access "/dvwa/vulnerabilities/sqli"
 
 Result:
 
-![alt text](<Screenshot 2026-06-30 123902.png>)
+![alt text](../screenshots/Screenshot%202026-06-30%20123902.png)
 
 ---
 

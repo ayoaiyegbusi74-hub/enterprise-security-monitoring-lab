@@ -119,7 +119,7 @@ index=main sourcetype=apache_access "/dvwa/vulnerabilities/brute"
 
 New events immediately appeared in Splunk.
 
-![alt text](enterprise-security-monitoring-lab/docs/debugging/screenshots/Screenshot%202026-06-30%20115632.png)
+![alt text](../screenshots/Screenshot%202026-06-30%20115632.png)
 
 
 ---

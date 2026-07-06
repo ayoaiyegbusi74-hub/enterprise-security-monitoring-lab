@@ -43,7 +43,7 @@ nmap -sV 192.168.52.20
 
 Nmap probed the Apache server with several HTTP requests attempting to identify the software and version.
 
-![alt text](<Screenshot 2026-06-30 105024.png>)
+![alt text](../screenshots/Screenshot%202026-06-30%20105024.png)
 
 Evidence included requests such as:
 
@@ -58,7 +58,7 @@ User agent observed:
 Nmap Scripting Engine
 ```
 
-![alt text](<Screenshot 2026-06-30 104759.png>)
+![alt text](../screenshots/Screenshot%202026-06-30%20104759.png)
 
 ---
 
@@ -73,7 +73,7 @@ index=main sourcetype=apache_access
 
 Result:
 
-![alt text](<Screenshot 2026-06-30 104911.png>)
+![alt text](../screenshots/Screenshot%202026-06-30%20104911.png)
 
 Requests observed:
 

@@ -53,7 +53,7 @@ GET /dvwa/vulnerabilities/brute/?username=admin&password=password&Login=Login HT
 
 ![alt text](../screenshots/Screenshot%202026-06-30%20115436.png)
 
-![alt text](<Screenshot 2026-06-30 115500.png>)
+![alt text](../screenshots/Screenshot%202026-06-30%20115500.png)
 ---
 
 ## Splunk Search
@@ -66,7 +66,7 @@ index=main sourcetype=apache_access "/dvwa/vulnerabilities/brute"
 
 Result:
 
-![alt text](<Screenshot 2026-06-30 115632.png>)
+![alt text](../screenshots/Screenshot%202026-06-30%20115632.png)
 
 The search returns all requests made to the DVWA Brute Force page.
 
