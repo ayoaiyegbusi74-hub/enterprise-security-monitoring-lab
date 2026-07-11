@@ -1,53 +1,98 @@
 
----
-
 # Apache Log Ingestion Troubleshooting
 
-## Issue
+## Overview
 
-Apache was generating new logs, but Splunk was not displaying the latest events.
+This document describes the troubleshooting process used to resolve a log ingestion issue where Apache HTTP Server continued generating log events, but Splunk Enterprise stopped displaying newly generated events.
+
+Because Apache access logs were the primary data source for detections, threat hunting, correlation searches, and dashboards, resolving this issue was essential to restoring the functionality of the Enterprise Security Monitoring Lab.
 
 ---
 
-## Symptoms
+# Environment
 
-Apache access log showed new requests:
+| Component | Value |
+|----------|-------|
+| Operating System | Red Hat Enterprise Linux 9 |
+| SIEM | Splunk Enterprise |
+| Web Server | Apache HTTP Server |
+| Log Source | Apache access_log and error_log |
+| Target Application | DVWA |
+
+---
+
+# Problem Statement
+
+Apache continued writing new events to both the access and error logs; however, Splunk stopped ingesting newly generated events.
+
+Previously indexed events remained searchable, but recent web activity did not appear in Splunk searches.
+
+This prevented validation of attack simulations and temporarily interrupted detection engineering and threat hunting activities.
+
+---
+
+# Symptoms
+
+The following symptoms were observed:
+
+- Apache generated new log entries successfully.
+- New HTTP requests appeared in the Apache access log.
+- Splunk searches returned only older events.
+- Dashboards and reports no longer reflected current web activity.
+- Attack simulations generated traffic but produced no corresponding events in Splunk.
+
+Apache logging was verified using:
 
 ```bash
 sudo tail -f /var/log/httpd/access_log
 ```
 
-However, Splunk searches only returned older events.
+Apache continued writing events correctly.
 
 ---
 
-## Investigation
+# Root Cause Analysis
 
-### Step 1
+Because Apache was successfully generating logs, the issue was determined to be related to Splunk's ability to access and monitor the log files rather than Apache itself.
 
-Verified Apache was still writing logs.
+Potential causes considered included:
 
-```
+- Incorrect monitor configuration
+- Disabled Splunk input
+- Incorrect index
+- Incorrect sourcetype
+- File permission issues
+- Directory permission issues
+
+---
+
+# Investigation Process
+
+## Step 1 – Verify Apache Log Generation
+
+Confirmed Apache continued writing new events.
+
+```bash
 sudo tail -f /var/log/httpd/access_log
 ```
 
 Result:
 
-Apache logging was working.
+Apache logging was functioning normally.
 
 ---
 
-### Step 2
+## Step 2 – Verify Splunk Monitor Configuration
 
-Verified Splunk input configuration.
+Reviewed the Splunk input configuration.
 
-```
+```bash
 sudo cat /opt/splunk/etc/apps/search/local/inputs.conf
 ```
 
-Result:
+Configuration:
 
-```
+```ini
 [monitor:///var/log/httpd/access_log]
 disabled = false
 host = rhel-siem
@@ -61,40 +106,55 @@ index = main
 sourcetype = apache_error
 ```
 
-Both log files were configured correctly.
+Result:
+
+Both Apache log files were configured correctly.
 
 ---
 
-### Step 3
+## Step 3 – Verify Directory Permissions
 
-Checked Linux permissions.
+Reviewed permissions on the Apache log directory.
 
-```
+```bash
 ls -ld /var/log/httpd
+```
+
+Output:
+
+```text
+drwx------ root root
 ```
 
 Result:
 
-```
-drwx------ root root
-```
+The directory was accessible only by the root user.
 
-The directory was accessible only by root.
+The Splunk service account could not enter the directory to continuously monitor the log files.
 
 ---
 
-## Root Cause
+# Root Cause
 
-Although Apache was writing logs, the Splunk service account did not have permission to enter the `/var/log/httpd` directory and continuously monitor the log files.
+The Splunk service account lacked sufficient permissions to access the `/var/log/httpd` directory.
+
+Although Apache continued writing new events, Splunk could not read the updated log files because the service account did not have execute permission on the directory or read permission on the log files.
 
 ---
 
-## Resolution
+# Resolution
 
-Granted the Splunk user access using ACLs.
+Access was granted using Linux Access Control Lists (ACLs).
+
+Directory permission:
 
 ```bash
 sudo setfacl -m u:splunk:rx /var/log/httpd
+```
+
+Log file permissions:
+
+```bash
 sudo setfacl -m u:splunk:r /var/log/httpd/access_log
 sudo setfacl -m u:splunk:r /var/log/httpd/error_log
 ```
@@ -107,46 +167,61 @@ sudo /opt/splunk/bin/splunk restart
 
 ---
 
-## Verification
+# Validation
 
 Generated a new DVWA request.
 
-Search:
+Executed the following search:
 
 ```spl
 index=main sourcetype=apache_access "/dvwa/vulnerabilities/brute"
 ```
 
-New events immediately appeared in Splunk.
+Result:
 
-![alt text](../screenshots/Screenshot%202026-06-30%20115632.png)
+New Apache events appeared immediately within Splunk.
 
+This confirmed that log ingestion had resumed successfully.
 
----
-
-## Lesson Learned
-
-Always verify:
-
-- Is the application generating logs?
-- Is Splunk monitoring the correct file?
-- Does Splunk have permission to read the log?
-
-Most ingestion problems are caused by one of these three issues.
+*(Insert screenshot here)*
 
 ---
 
-"Splunk stopped ingesting Apache logs. How would you troubleshoot?"
+# Impact
 
-Now you have a real answer from your own lab.
+Resolving the log ingestion issue restored:
 
-Your troubleshooting process
-✅ Verified Apache was still generating logs (tail -f).
-✅ Confirmed Splunk had the correct monitor configuration (inputs.conf).
-✅ Confirmed the logs were being written to the expected file.
-✅ Checked directory and file permissions.
-✅ Identified that Splunk lacked permission to read the log directory/files.
-✅ Granted the necessary ACLs and verified ingestion resumed.
+- Real-time Apache log monitoring
+- Detection searches
+- Scheduled alerts
+- Threat hunting
+- Correlation searches
+- Dashboard updates
+- Incident investigations
 
+Without resolving this issue, the remainder of the Enterprise Security Monitoring Lab would not have functioned correctly.
 
 ---
+
+# Lessons Learned
+
+This troubleshooting exercise reinforced the importance of validating each layer of the logging pipeline.
+
+A successful log ingestion workflow requires:
+
+1. The application must generate logs.
+2. Splunk must monitor the correct files.
+3. The Splunk service account must have permission to access those files.
+
+A failure at any point in the pipeline prevents security events from reaching the SIEM.
+
+---
+
+# Best Practices
+
+- Verify application log generation before investigating Splunk.
+- Review `inputs.conf` when log ingestion stops.
+- Validate Linux directory and file permissions.
+- Use ACLs instead of modifying ownership when granting Splunk access.
+- Restart Splunk after significant input or permission changes.
+- Confirm ingestion by generating new events rather than relying on historical data.

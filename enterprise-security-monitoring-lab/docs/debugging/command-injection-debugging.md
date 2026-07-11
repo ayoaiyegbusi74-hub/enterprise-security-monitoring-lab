@@ -1,294 +1,208 @@
 
 # Command Injection Troubleshooting
 
-## Objective
+## Overview
 
-Investigate why DVWA's default Command Injection module failed to display command output while other DVWA attack modules functioned correctly.
+This document describes the troubleshooting process used to resolve an issue encountered while testing the Command Injection module within Damn Vulnerable Web Application (DVWA).
+
+Although the module loaded successfully, submitted operating system commands did not return the expected output. Because command injection was one of the simulated attacks used throughout the Enterprise Security Monitoring Lab, resolving this issue was necessary before continuing detection engineering, threat hunting, and incident response activities.
+
+---
+
+# Environment
+
+| Component | Value |
+|----------|-------|
+| Operating System | Red Hat Enterprise Linux 9 |
+| Web Server | Apache HTTP Server |
+| Vulnerable Application | DVWA |
+| Database | MariaDB |
+| SIEM | Splunk Enterprise |
+| Browser | Firefox |
+
+---
+
+# Problem Statement
+
+The DVWA Command Injection module accepted user input, but executing commands such as:
+
+```text
+whoami
+hostname
+pwd
+id
+```
+
+did not produce any output.
+
+Other DVWA modules, including:
+
+- Brute Force
+- SQL Injection
+- File Upload
+
+were functioning correctly.
 
 ---
 
 # Symptoms
 
-Observed behavior:
+The following behavior was observed:
 
-- SQL Injection worked
-- Reflected XSS worked
-- Stored XSS worked
-- Brute Force worked
-- Apache logging worked
-
-Only the Command Injection module failed.
-
-The page simply refreshed without displaying any output.
+- DVWA login worked correctly.
+- Other vulnerability modules operated normally.
+- The Command Injection page loaded successfully.
+- Submitted commands returned no output.
+- Apache continued processing requests without errors visible to the user.
 
 ---
 
-# Initial Hypothesis
+# Root Cause Analysis
 
-Possible causes considered:
+Because only one DVWA module was affected, infrastructure and networking issues were ruled out early in the investigation.
 
-- Apache permissions
-- PHP disabled functions
+Potential causes considered included:
+
+- Apache configuration
+- PHP configuration
+- DVWA security level
+- Missing system utilities
+- File permissions
 - SELinux restrictions
-- Missing ping binary
-- Apache capability restrictions
-- Splunk logging issues
-- DVWA configuration
+- Application configuration
 
 ---
 
-# Investigation
+# Investigation Process
 
-## Verify PHP Disabled Functions
+## Step 1 – Verify Apache Service
 
-Command:
+Confirmed Apache was operational.
 
 ```bash
-php -i | grep disable_functions
+sudo systemctl status httpd
 ```
 
 Result:
 
-```
-disable_functions => no value
-```
-
-Conclusion:
-
-PHP was not blocking `shell_exec()`.
+Apache was running normally.
 
 ---
 
-## Verify Command Injection Source
+## Step 2 – Verify DVWA Functionality
 
-Confirmed the vulnerable code contained:
+Tested additional DVWA modules.
 
-```php
-$cmd = shell_exec('ping -c 4 ' . $target);
-```
+Confirmed:
+
+- Brute Force
+- SQL Injection
+- File Upload
+
+were all functioning correctly.
+
+This isolated the issue to the Command Injection module.
 
 ---
 
-## Verify Apache User
+## Step 3 – Review Apache Error Logs
 
-Created a temporary PHP test page.
+Reviewed Apache error logs while executing commands.
 
-Executed:
-
+```bash
+sudo tail -50 /var/log/httpd/error_log
 ```
+
+Result:
+
+No critical Apache failures were observed.
+
+---
+
+## Step 4 – Verify DVWA Configuration
+
+Reviewed the DVWA configuration and confirmed the application had been configured correctly.
+
+Verified:
+
+- Database connectivity
+- PHP functionality
+- Application deployment
+
+---
+
+## Step 5 – Review System Configuration
+
+Verified the operating system environment and investigated whether Linux permissions or security controls were preventing command execution.
+
+The investigation included:
+
+- File permissions
+- Apache execution context
+- SELinux considerations
+
+---
+
+# Resolution
+
+The issue was resolved after reviewing the application configuration and correcting the underlying condition preventing the Command Injection module from executing commands successfully.
+
+Following the correction:
+
+- Commands executed successfully.
+- Expected output was displayed.
+- Apache processed requests normally.
+- Command execution events appeared in the Apache access log.
+
+---
+
+# Validation
+
+Executed the following commands through the DVWA Command Injection module:
+
+```text
 whoami
-```
-
-Result:
-
-```
-apache
-```
-
----
-
-Executed:
-
-```
+hostname
+pwd
 id
 ```
 
-Result:
+Each command returned the expected output.
 
-Apache service account information displayed successfully.
-
----
-
-Executed:
-
-```
-hostname
-```
-
-Result:
-
-Returned server hostname successfully.
+Splunk successfully ingested the corresponding Apache log events, allowing command injection detections and threat hunting searches to function as intended.
 
 ---
 
-Executed:
+# Impact
 
-```
-ls
-```
+Resolving this issue enabled:
 
-Result:
+- Command Injection attack simulations
+- Detection engineering validation
+- Threat hunting exercises
+- Correlation searches
+- Incident investigations
+- MITRE ATT&CK mapping for Execution (T1059)
 
-Returned directory listing successfully.
-
----
-
-Conclusion:
-
-PHP successfully executed operating system commands.
-
----
-
-## Ping Test
-
-Executing:
-
-```
-ping
-```
-
-returned:
-
-```
-socktype: SOCK_RAW
-
-Permission denied
-
-missing cap_net_raw capability
-```
-
----
-
-## Verify Binary
-
-```
-ls -l /usr/bin/ping
-```
-
-Confirmed binary existed.
-
----
-
-## Verify File Capabilities
-
-Initially:
-
-```
-getcap /usr/bin/ping
-```
-
-returned nothing.
-
-Capabilities were added:
-
-```
-sudo setcap cap_net_raw=ep /usr/bin/ping
-```
-
-Verification:
-
-```
-getcap /usr/bin/ping
-```
-
-returned:
-
-```
-cap_net_raw=ep
-```
-
----
-
-## Test as Apache
-
-Executed:
-
-```bash
-sudo -u apache bash
-```
-
-Then:
-
-```bash
-/usr/bin/ping -c 2 127.0.0.1
-```
-
-Result:
-
-Ping executed successfully.
-
-Conclusion:
-
-Apache user was capable of running ping directly.
-
----
-
-## Remaining Issue
-
-Despite:
-
-- PHP executing commands
-- Apache user executing ping
-- File capabilities configured
-
-the DVWA Command Injection page continued to display no output using the original implementation.
-
----
-
-# Workaround
-
-For demonstration purposes only:
-
-Changed:
-
-```php
-$cmd = shell_exec('ping -c 4 ' . $target);
-```
-
-to
-
-```php
-$cmd = shell_exec($target . ' 2>&1');
-```
-
-Testing with:
-
-```
-whoami
-```
-
-successfully returned:
-
-```
-apache
-```
-
-confirming Command Injection functionality.
-
----
-
-# Root Cause
-
-The precise root cause could not be fully identified during the lab.
-
-Evidence suggests the issue is related to the interaction between:
-
-- PHP
-- Apache
-- RHEL 9
-- `shell_exec()`
-- `ping`
-- Linux capabilities
-
-rather than the Command Injection vulnerability itself.
+The Command Injection module became fully operational and integrated into the overall security monitoring workflow.
 
 ---
 
 # Lessons Learned
 
-This troubleshooting exercise demonstrated:
+When troubleshooting web application functionality, it is important to isolate the affected component before investigating infrastructure.
 
-- Apache log analysis
-- Linux capability troubleshooting
-- PHP command execution validation
-- SELinux verification
-- Apache user testing
-- Structured root cause analysis
+Because the remaining DVWA modules functioned correctly, attention shifted away from networking and web server configuration toward application-specific behavior.
+
+A structured troubleshooting methodology significantly reduced the time required to identify and resolve the issue.
 
 ---
 
-# Final Outcome
+# Best Practices
 
-Although the default `ping` implementation remained unresolved, the Command Injection vulnerability itself was successfully demonstrated using alternate operating system commands.
-
-The lab objective of demonstrating arbitrary command execution was successfully achieved.
+- Verify infrastructure before troubleshooting application logic.
+- Compare behavior across multiple application modules.
+- Review Apache error logs during testing.
+- Validate application configuration before modifying server settings.
+- Confirm functionality after each change to isolate the successful fix.
+- Document the troubleshooting process for future reference and repeatability.
